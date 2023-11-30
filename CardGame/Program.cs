@@ -10,6 +10,7 @@ namespace CardGames
             int noPlayers;
             Stack<Card> cardDeckStack = new Stack<Card>();
             List<Card> cardDeck = new List<Card>();
+            Stack<Card> cardPile = new Stack<Card>();
             Random rand = new Random();
             List<Player> playerList = new List<Player>();
             bool playersChosen = false;
@@ -23,32 +24,32 @@ namespace CardGames
                     switch (x)
                     {
                         case 0:
-                            cardDeck.Add(new Card(y, 'R', "number"));
+                            cardDeck.Add(new Card(y, "Red", "number"));
                             break;
                         case 1:
                             if (y != 0)
-                                cardDeck.Add(new Card(y, 'R', "number"));
+                                cardDeck.Add(new Card(y, "Red", "number"));
                             break;
                         case 2:
-                            cardDeck.Add(new Card(y, 'Y', "number"));
+                            cardDeck.Add(new Card(y, "Yellow", "number"));
                             break;
                         case 3:
                             if (y != 0)
-                                cardDeck.Add(new Card(y, 'Y', "number"));
+                                cardDeck.Add(new Card(y, "Yellow", "number"));
                             break;
                         case 4:
-                            cardDeck.Add(new Card(y, 'G', "number"));
+                            cardDeck.Add(new Card(y, "Green", "number"));
                             break;
                         case 5:
                             if (y != 0)
-                                cardDeck.Add(new Card(y, 'G', "number"));
+                                cardDeck.Add(new Card(y, "Green", "number"));
                             break;
                         case 6:
-                            cardDeck.Add(new Card(y, 'B', "number"));
+                            cardDeck.Add(new Card(y, "Blue", "number"));
                             break;
                         case 7:
                             if (y != 0)
-                                cardDeck.Add(new Card(y, 'B', "number"));
+                                cardDeck.Add(new Card(y, "Blue", "number"));
                             break;
                     }
                 }
@@ -65,7 +66,6 @@ namespace CardGames
             {
                 cardDeckStack.Push(card);
             }
-
             do
             {
                 Console.WriteLine("How many people are playing Uno?");
@@ -76,10 +76,9 @@ namespace CardGames
                     {
                         Console.WriteLine($"Enter a name for Player {x}");
                         List<Card> hand = new List<Card>();
-                        for (int y=0; y<7; x++)
+                        for (int y=0; y<7; y++)
                         {
-                            hand.Add(cardDeckStack.Peek());
-                            cardDeckStack.Pop();
+                            hand.Add(cardDeckStack.Pop());
                         }
                         playerList.Add(new Player(Console.ReadLine(), x, hand));
                     }
@@ -91,8 +90,16 @@ namespace CardGames
                 }
             } while (!playersChosen);
 
+            // Starting card
+            cardPile.Push(cardDeckStack.Peek());
+            cardDeckStack.Pop();
             do
             {
+                Console.WriteLine($"Current Card on Pile: {cardPile.Peek().CardColour} {cardPile.Peek().CardVal}");
+                for (int x=0; x<2; x++)
+                {
+                    Console.WriteLine($"Do you have a card to play {playerList[x].Username}");
+                }
 
             } while (!winner || cardDeck.Count > 0);
             Console.ReadKey();
