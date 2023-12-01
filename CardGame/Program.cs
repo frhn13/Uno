@@ -7,7 +7,9 @@ namespace CardGames
     {
         static void Main(string[] args)
         {
-            int noPlayers;
+            int noPlayers = 0;
+            string cardChoice;
+            int cardPosition;
             Stack<Card> cardDeckStack = new Stack<Card>();
             List<Card> cardDeck = new List<Card>();
             Stack<Card> cardPile = new Stack<Card>();
@@ -91,14 +93,49 @@ namespace CardGames
             } while (!playersChosen);
 
             // Starting card
-            cardPile.Push(cardDeckStack.Peek());
-            cardDeckStack.Pop();
+            cardPile.Push(cardDeckStack.Pop());
             do
             {
-                Console.WriteLine($"Current Card on Pile: {cardPile.Peek().CardColour} {cardPile.Peek().CardVal}");
-                for (int x=0; x<2; x++)
+                for (int x=0; x<noPlayers; x++)
                 {
+                    Console.WriteLine($"Current Card on Pile: {cardPile.Peek().CardColour} {cardPile.Peek().CardVal}");
+                    //Console.WriteLine($"Card Pile: {cardDeckStack.Peek().CardColour} {cardDeckStack.Peek().CardVal}");
                     Console.WriteLine($"Do you have a card to play {playerList[x].Username}");
+
+                    for (int y=0; y<playerList[x].CardHand.Count; y++)
+                    {
+                        Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardVal},");
+                    }
+                    Console.WriteLine("\nSelect a card by its number position in your hand to place on the pile, or type 'draw' to draw a card and move on.");
+                    cardChoice = Console.ReadLine();
+                    if (cardChoice.ToUpper() == "DRAW")
+                        playerList[x].AddCard(cardDeckStack.Pop());
+                    else
+                    {
+                        try
+                        {
+                            cardPosition = Convert.ToInt32(cardChoice);
+                            if (playerList[x].CardHand[cardPosition-1].CardColour == cardPile.Peek().CardColour || playerList[x].CardHand[cardPosition-1].CardVal == cardPile.Peek().CardVal)
+                            {
+                                cardPile.Push(playerList[x].CardHand[cardPosition-1]);
+                                playerList[x].RemoveCard(cardPosition-1);
+                            }
+                            else
+                            {
+                                Console.WriteLine($"{playerList[x].CardHand[cardPosition-1].CardColour} {playerList[x].CardHand[cardPosition-1].CardVal}");
+                                Console.WriteLine("That card can't go on the pile.");
+                            }
+                        } 
+                        catch (FormatException)
+                        {
+                            Console.WriteLine("You didn't enter the number position of the card in your hand.");
+                        }
+                        catch (ArgumentOutOfRangeException)
+                        {
+                            Console.WriteLine("Position entered is out of the range of your hand.");
+                        }
+                    }
+
                 }
 
             } while (!winner || cardDeck.Count > 0);
