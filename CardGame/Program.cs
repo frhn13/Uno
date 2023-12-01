@@ -10,14 +10,16 @@ namespace CardGames
             int noPlayers = 0;
             string cardChoice;
             int cardPosition;
+            string winner = "";
             Stack<Card> cardDeckStack = new Stack<Card>();
             List<Card> cardDeck = new List<Card>();
             Stack<Card> cardPile = new Stack<Card>();
             Random rand = new Random();
             List<Player> playerList = new List<Player>();
             bool playersChosen = false;
-            bool winner = false;
+            bool winnerFound = false;
             bool gameOver = false;
+            bool cardPlaced = false;
 
             for (int x = 0; x < 8; x++)
             {
@@ -98,47 +100,60 @@ namespace CardGames
             {
                 for (int x=0; x<noPlayers; x++)
                 {
-                    Console.WriteLine($"Current Card on Pile: {cardPile.Peek().CardColour} {cardPile.Peek().CardVal}");
-                    //Console.WriteLine($"Card Pile: {cardDeckStack.Peek().CardColour} {cardDeckStack.Peek().CardVal}");
-                    Console.WriteLine($"Do you have a card to play {playerList[x].Username}");
-
-                    for (int y=0; y<playerList[x].CardHand.Count; y++)
+                    do
                     {
-                        Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardVal},");
-                    }
-                    Console.WriteLine("\nSelect a card by its number position in your hand to place on the pile, or type 'draw' to draw a card and move on.");
-                    cardChoice = Console.ReadLine();
-                    if (cardChoice.ToUpper() == "DRAW")
-                        playerList[x].AddCard(cardDeckStack.Pop());
-                    else
-                    {
-                        try
-                        {
-                            cardPosition = Convert.ToInt32(cardChoice);
-                            if (playerList[x].CardHand[cardPosition-1].CardColour == cardPile.Peek().CardColour || playerList[x].CardHand[cardPosition-1].CardVal == cardPile.Peek().CardVal)
-                            {
-                                cardPile.Push(playerList[x].CardHand[cardPosition-1]);
-                                playerList[x].RemoveCard(cardPosition-1);
-                            }
-                            else
-                            {
-                                Console.WriteLine($"{playerList[x].CardHand[cardPosition-1].CardColour} {playerList[x].CardHand[cardPosition-1].CardVal}");
-                                Console.WriteLine("That card can't go on the pile.");
-                            }
-                        } 
-                        catch (FormatException)
-                        {
-                            Console.WriteLine("You didn't enter the number position of the card in your hand.");
-                        }
-                        catch (ArgumentOutOfRangeException)
-                        {
-                            Console.WriteLine("Position entered is out of the range of your hand.");
-                        }
-                    }
+                        cardPlaced = false;
+                        Console.WriteLine($"Current Card on Pile: {cardPile.Peek().CardColour} {cardPile.Peek().CardVal}");
+                        Console.WriteLine($"{playerList[x].Username}'s Turn");
 
+                        for (int y = 0; y < playerList[x].CardHand.Count; y++)
+                        {
+                            Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardVal},");
+                        }
+                        Console.WriteLine("\nSelect a card by its number position in your hand to place on the pile, or type 'draw' to draw a card and move on.");
+                        cardChoice = Console.ReadLine();
+                        if (cardChoice.ToUpper() == "DRAW")
+                        {
+                            playerList[x].AddCard(cardDeckStack.Pop());
+                            cardPlaced = true;
+                        }
+                        else
+                        {
+                            try
+                            {
+                                cardPosition = Convert.ToInt32(cardChoice);
+                                if (playerList[x].CardHand[cardPosition - 1].CardColour == cardPile.Peek().CardColour || playerList[x].CardHand[cardPosition - 1].CardVal == cardPile.Peek().CardVal)
+                                {
+                                    cardPlaced = true;
+                                    cardPile.Push(playerList[x].CardHand[cardPosition - 1]);
+                                    playerList[x].RemoveCard(cardPosition - 1);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("That card can't go on the pile.");
+                                }
+                            }
+                            catch (FormatException)
+                            {
+                                Console.WriteLine("You didn't enter the number position of the card in your hand.");
+                            }
+                            catch (ArgumentOutOfRangeException)
+                            {
+                                Console.WriteLine("Position entered is out of the range of your hand.");
+                            }
+                        }
+                        if (playerList[x].CardHand.Count <= 0)
+                        {
+                            winnerFound = true;
+                            winner = playerList[x].Username;
+                            break;
+                        }
+                    } while (!cardPlaced);
+                    if (winnerFound || cardDeck.Count <= 0)
+                        break;
                 }
-
-            } while (!winner || cardDeck.Count > 0);
+            } while (!winnerFound && cardDeck.Count > 0);
+            Console.WriteLine($"Winner is : {winner}!");
             Console.ReadKey();
         }
     }
