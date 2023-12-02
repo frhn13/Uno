@@ -59,6 +59,35 @@ namespace CardGames
                                 break;
                         }
                     }
+                    if (x == 0 || x == 1)
+                    {
+                        cardDeck.Add(new Card(11, "Yellow", "Block"));
+                        cardDeck.Add(new Card(11, "Yellow", "Reverse"));
+                        cardDeck.Add(new Card(11, "Yellow", "Plus 2"));
+                    }
+                    else if (x == 2 || x == 3)
+                    {
+                        cardDeck.Add(new Card(11, "Red", "Block"));
+                        cardDeck.Add(new Card(11, "Red", "Reverse"));
+                        cardDeck.Add(new Card(11, "Red", "Plus 2"));
+                    }
+                    else if (x == 4 || x == 5)
+                    {
+                        cardDeck.Add(new Card(11, "Green", "Block"));
+                        cardDeck.Add(new Card(11, "Green", "Reverse"));
+                        cardDeck.Add(new Card(11, "Green", "Plus 2"));
+                    }
+                    else if (x == 6 || x == 7)
+                    {
+                        cardDeck.Add(new Card(11, "Blue", "Block"));
+                        cardDeck.Add(new Card(11, "Blue", "Reverse"));
+                        cardDeck.Add(new Card(11, "Blue", "Plus 2"));
+                    }
+                }
+                for (int i = 0; i < 4; i++)
+                {
+                    cardDeck.Add(new Card(11, "Neutral", "Change Colour"));
+                    cardDeck.Add(new Card(11, "Neutral", "Plus 4"));
                 }
                 // Randomises the cards
                 for (int i = cardDeck.Count - 1; i > 0; i--)
@@ -105,13 +134,19 @@ namespace CardGames
                         do
                         {
                             cardPlaced = false;
-                            Console.WriteLine($"Current Card on Pile: {cardPile.Peek().CardColour} {cardPile.Peek().CardVal}");
+                            if (cardPile.Peek().CardType == "number")
+                                Console.WriteLine($"Current Card on Pile: {cardPile.Peek().CardColour} {cardPile.Peek().CardVal}");
+                            else
+                                Console.WriteLine($"Current Card on Pile: {cardPile.Peek().CardColour} {cardPile.Peek().CardType}");
                             Console.WriteLine($"Cards left in Draw Deck: {cardDeckStack.Count}");
                             Console.WriteLine($"{playerList[x].Username}'s Turn");
 
                             for (int y = 0; y < playerList[x].CardHand.Count; y++)
                             {
-                                Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardVal},");
+                                if (playerList[x].CardHand[y].CardType == "number")
+                                    Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardVal},");
+                                else
+                                    Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardType},");
                             }
                             Console.WriteLine("\nSelect a card by its number position in your hand to place on the pile, or type 'draw' to draw a card and move on.");
                             cardChoice = Console.ReadLine();
@@ -123,7 +158,10 @@ namespace CardGames
                                 Console.WriteLine("New Hand:");
                                 for (int y = 0; y < playerList[x].CardHand.Count; y++)
                                 {
-                                    Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardVal},");
+                                    if (playerList[x].CardHand[y].CardType == "number")
+                                        Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardVal},");
+                                    else
+                                        Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardType},");
                                 }
                                 Console.WriteLine();
                             }
@@ -132,12 +170,52 @@ namespace CardGames
                                 try
                                 {
                                     cardPosition = Convert.ToInt32(cardChoice);
-                                    if (playerList[x].CardHand[cardPosition - 1].CardColour == cardPile.Peek().CardColour || playerList[x].CardHand[cardPosition - 1].CardVal == cardPile.Peek().CardVal)
+                                    if (playerList[x].CardHand[cardPosition - 1].CardType == "number" && (playerList[x].CardHand[cardPosition - 1].CardColour == cardPile.Peek().CardColour || playerList[x].CardHand[cardPosition - 1].CardVal == cardPile.Peek().CardVal))
                                     {
                                         cardPlaced = true;
                                         cardPile.Push(playerList[x].CardHand[cardPosition - 1]);
                                         playerList[x].RemoveCard(cardPosition - 1);
                                         Console.WriteLine();
+                                    }
+                                    else if (playerList[x].CardHand[cardPosition - 1].CardType != "number" && (playerList[x].CardHand[cardPosition - 1].CardColour == cardPile.Peek().CardColour || playerList[x].CardHand[cardPosition - 1].CardType == cardPile.Peek().CardType || playerList[x].CardHand[cardPosition - 1].CardColour == "Neutral"))
+                                    {
+                                        cardPlaced = true;
+                                        cardPile.Push(playerList[x].CardHand[cardPosition - 1]);
+                                        playerList[x].RemoveCard(cardPosition - 1);
+                                        Console.WriteLine();
+                                        switch (cardPile.Peek().CardType)
+                                        {
+                                            case "Plus 2":
+                                                if (x < noPlayers-1)
+                                                {
+                                                    playerList[x+1].AddCard(cardDeckStack.Pop());
+                                                    playerList[x+1].AddCard(cardDeckStack.Pop());
+                                                }
+                                                else
+                                                {
+                                                    playerList[0].AddCard(cardDeckStack.Pop());
+                                                    playerList[0].AddCard(cardDeckStack.Pop());
+                                                }
+                                                break;
+                                            case "Plus 4":
+                                                if (x < noPlayers - 1)
+                                                {
+                                                    for (int i=0; i<4; i++)
+                                                        playerList[x+1].AddCard(cardDeckStack.Pop());
+                                                }
+                                                else
+                                                {
+                                                    for (int i = 0; i < 4; i++)
+                                                        playerList[0].AddCard(cardDeckStack.Pop());
+                                                }
+                                                break;
+                                            case "Change Colour":
+                                                break;
+                                            case "Reverse":
+                                                break;
+                                            case "Block":
+                                                break;
+                                        }
                                     }
                                     else
                                     {
