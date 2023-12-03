@@ -22,6 +22,7 @@ namespace CardGames
                 bool playersChosen = false;
                 bool winnerFound = false;
                 bool cardPlaced = false;
+                bool blocked = false;
 
                 for (int x = 0; x < 8; x++)
                 {
@@ -62,25 +63,25 @@ namespace CardGames
                     if (x == 0 || x == 1)
                     {
                         cardDeck.Add(new Card(11, "Yellow", "Block"));
-                        cardDeck.Add(new Card(11, "Yellow", "Reverse"));
+                        /*cardDeck.Add(new Card(11, "Yellow", "Reverse"));*/
                         cardDeck.Add(new Card(11, "Yellow", "Plus 2"));
                     }
                     else if (x == 2 || x == 3)
                     {
                         cardDeck.Add(new Card(11, "Red", "Block"));
-                        cardDeck.Add(new Card(11, "Red", "Reverse"));
+                        /*cardDeck.Add(new Card(11, "Red", "Reverse"));*/
                         cardDeck.Add(new Card(11, "Red", "Plus 2"));
                     }
                     else if (x == 4 || x == 5)
                     {
                         cardDeck.Add(new Card(11, "Green", "Block"));
-                        cardDeck.Add(new Card(11, "Green", "Reverse"));
+                        /*cardDeck.Add(new Card(11, "Green", "Reverse"));*/
                         cardDeck.Add(new Card(11, "Green", "Plus 2"));
                     }
                     else if (x == 6 || x == 7)
                     {
                         cardDeck.Add(new Card(11, "Blue", "Block"));
-                        cardDeck.Add(new Card(11, "Blue", "Reverse"));
+                        /*cardDeck.Add(new Card(11, "Blue", "Reverse"));*/
                         cardDeck.Add(new Card(11, "Blue", "Plus 2"));
                     }
                 }
@@ -208,12 +209,62 @@ namespace CardGames
                                                     for (int i = 0; i < 4; i++)
                                                         playerList[0].AddCard(cardDeckStack.Pop());
                                                 }
+                                                bool wrongColour;
+                                                do
+                                                {
+                                                    wrongColour = false;
+                                                    Console.WriteLine("Choose the colour, red, green, blue or yellow");
+                                                    switch(Console.ReadLine().ToUpper())
+                                                    {
+                                                        case "RED":
+                                                            cardPile.Peek().CardColour = "Red";
+                                                            break;
+                                                        case "YELLOW":
+                                                            cardPile.Peek().CardColour = "Yellow";
+                                                            break;
+                                                        case "BLUE":
+                                                            cardPile.Peek().CardColour = "Blue";
+                                                            break;
+                                                        case "GREEN":
+                                                            cardPile.Peek().CardColour = "Green";
+                                                            break;
+                                                        default:
+                                                            Console.WriteLine("Colour chosen is invalid.");
+                                                            wrongColour = true;
+                                                            break;
+                                                    }
+                                                } while (wrongColour);
                                                 break;
                                             case "Change Colour":
+                                                do
+                                                {
+                                                    wrongColour = false;
+                                                    Console.WriteLine("Choose the colour, red, green, blue or yellow");
+                                                    switch (Console.ReadLine().ToUpper())
+                                                    {
+                                                        case "RED":
+                                                            cardPile.Peek().CardColour = "Red";
+                                                            break;
+                                                        case "YELLOW":
+                                                            cardPile.Peek().CardColour = "Yellow";
+                                                            break;
+                                                        case "BLUE":
+                                                            cardPile.Peek().CardColour = "Blue";
+                                                            break;
+                                                        case "GREEN":
+                                                            cardPile.Peek().CardColour = "Green";
+                                                            break;
+                                                        default:
+                                                            Console.WriteLine("Colour chosen is invalid.");
+                                                            wrongColour = true;
+                                                            break;
+                                                    }
+                                                } while (wrongColour);
                                                 break;
-                                            case "Reverse":
-                                                break;
+                                            /*case "Reverse":
+                                                break;*/
                                             case "Block":
+                                                blocked = true;
                                                 break;
                                         }
                                     }
@@ -245,6 +296,14 @@ namespace CardGames
                         } while (!cardPlaced);
                         if (winnerFound || cardDeck.Count <= 0)
                             break;
+                        if (blocked)
+                        {
+                            blocked = false;
+                            if (x < noPlayers - 1)
+                                x++;
+                            else
+                                x = 0;
+                        }
                     }
                 } while (!winnerFound && cardDeck.Count > 0);
                 if (winnerFound)
