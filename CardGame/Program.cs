@@ -107,16 +107,27 @@ namespace CardGames
                     Console.WriteLine("How many people are playing Uno?");
                     try
                     {
+                        List<string> playerListStr = new List<string>();
+                        string playerName;
+                        bool alreadyUsed;
                         noPlayers = Convert.ToInt32(Console.ReadLine());
                         for (int x = 1; x <= noPlayers; x++)
                         {
-                            Console.WriteLine($"Enter a name for Player {x}");
+                            do
+                            {
+                                Console.WriteLine($"Enter a name for Player {x}");
+                                playerName = Console.ReadLine();
+                                alreadyUsed = playerListStr.Contains(playerName);
+                                if (alreadyUsed)
+                                    Console.WriteLine("That username has already been selected, please try again.");
+                            } while (alreadyUsed);
                             List<Card> hand = new List<Card>();
                             for (int y = 0; y < 7; y++)
                             {
                                 hand.Add(cardDeckStack.Pop());
                             }
-                            playerList.Add(new Player(Console.ReadLine(), x, hand));
+                            playerList.Add(new Player(playerName, x, hand));
+                            playerListStr.Add(playerName);
                         }
                         playersChosen = true;
                     }
@@ -128,6 +139,13 @@ namespace CardGames
 
                 // Starting card
                 cardPile.Push(cardDeckStack.Pop());
+                if (cardDeckStack.Peek().CardColour == "Neutral")
+                {
+                    Random random = new Random();
+                    List<string> choices = new List<string>() { "Red", "Blue", "Green", "Yellow" };
+                    int randNumber = random.Next(choices.Count);
+                    cardDeckStack.Peek().CardColour = choices[randNumber];
+                }
                 do
                 {
                     for (int x = 0; x < noPlayers; x++)
