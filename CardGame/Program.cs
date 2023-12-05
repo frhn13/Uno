@@ -13,6 +13,7 @@ namespace CardGames
                 int noPlayers = 0;
                 string cardChoice;
                 int cardPosition;
+                bool forwardDirection = true;
                 string winner = "";
                 Stack<Card> cardDeckStack = new Stack<Card>();
                 List<Card> cardDeck = new List<Card>();
@@ -63,25 +64,25 @@ namespace CardGames
                     if (x == 0 || x == 1)
                     {
                         cardDeck.Add(new Card(11, "Yellow", "Block"));
-                        /*cardDeck.Add(new Card(11, "Yellow", "Reverse"));*/
+                        cardDeck.Add(new Card(11, "Yellow", "Reverse"));
                         cardDeck.Add(new Card(11, "Yellow", "Plus 2"));
                     }
                     else if (x == 2 || x == 3)
                     {
                         cardDeck.Add(new Card(11, "Red", "Block"));
-                        /*cardDeck.Add(new Card(11, "Red", "Reverse"));*/
+                        cardDeck.Add(new Card(11, "Red", "Reverse"));
                         cardDeck.Add(new Card(11, "Red", "Plus 2"));
                     }
                     else if (x == 4 || x == 5)
                     {
                         cardDeck.Add(new Card(11, "Green", "Block"));
-                        /*cardDeck.Add(new Card(11, "Green", "Reverse"));*/
+                        cardDeck.Add(new Card(11, "Green", "Reverse"));
                         cardDeck.Add(new Card(11, "Green", "Plus 2"));
                     }
                     else if (x == 6 || x == 7)
                     {
                         cardDeck.Add(new Card(11, "Blue", "Block"));
-                        /*cardDeck.Add(new Card(11, "Blue", "Reverse"));*/
+                        cardDeck.Add(new Card(11, "Blue", "Reverse"));
                         cardDeck.Add(new Card(11, "Blue", "Plus 2"));
                     }
                 }
@@ -153,182 +154,194 @@ namespace CardGames
                     int randNumber = random.Next(choices.Count);
                     cardDeckStack.Peek().CardColour = choices[randNumber];
                 }
+                int playerPosition = 0;
                 do
                 {
-                    for (int x = 0; x < noPlayers; x++)
+                    do
                     {
-                        do
-                        {
-                            cardPlaced = false;
-                            if (cardPile.Peek().CardType == "number")
-                                Console.WriteLine($"Current Card on Pile: {cardPile.Peek().CardColour} {cardPile.Peek().CardVal}");
-                            else
-                                Console.WriteLine($"Current Card on Pile: {cardPile.Peek().CardColour} {cardPile.Peek().CardType}");
-                            Console.WriteLine($"Cards left in Draw Deck: {cardDeckStack.Count}");
-                            Console.WriteLine($"{playerList[x].Username}'s Turn");
+                        cardPlaced = false;
+                        if (cardPile.Peek().CardType == "number")
+                            Console.WriteLine($"Current Card on Pile: {cardPile.Peek().CardColour} {cardPile.Peek().CardVal}");
+                        else
+                            Console.WriteLine($"Current Card on Pile: {cardPile.Peek().CardColour} {cardPile.Peek().CardType}");
+                        Console.WriteLine($"Cards left in Draw Deck: {cardDeckStack.Count}");
+                        Console.WriteLine($"{playerList[playerPosition].Username}'s Turn");
 
-                            for (int y = 0; y < playerList[x].CardHand.Count; y++)
-                            {
-                                if (playerList[x].CardHand[y].CardType == "number")
-                                    Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardVal},");
-                                else
-                                    Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardType},");
-                            }
-                            Console.WriteLine("\nSelect a card by its number position in your hand to place on the pile, or type 'draw' to draw a card and move on.");
-                            cardChoice = Console.ReadLine();
-                            if (cardChoice.ToUpper() == "DRAW")
-                            {
-                                playerList[x].AddCard(cardDeckStack.Pop());
-                                cardPlaced = true;
-
-                                Console.WriteLine("New Hand:");
-                                for (int y = 0; y < playerList[x].CardHand.Count; y++)
-                                {
-                                    if (playerList[x].CardHand[y].CardType == "number")
-                                        Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardVal},");
-                                    else
-                                        Console.WriteLine($"Card {y + 1}: {playerList[x].CardHand[y].CardColour} {playerList[x].CardHand[y].CardType},");
-                                }
-                                Console.WriteLine();
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    cardPosition = Convert.ToInt32(cardChoice);
-                                    if (playerList[x].CardHand[cardPosition - 1].CardType == "number" && (playerList[x].CardHand[cardPosition - 1].CardColour == cardPile.Peek().CardColour || playerList[x].CardHand[cardPosition - 1].CardVal == cardPile.Peek().CardVal))
-                                    {
-                                        cardPlaced = true;
-                                        cardPile.Push(playerList[x].CardHand[cardPosition - 1]);
-                                        playerList[x].RemoveCard(cardPosition - 1);
-                                        Console.WriteLine();
-                                    }
-                                    else if (playerList[x].CardHand[cardPosition - 1].CardType != "number" && (playerList[x].CardHand[cardPosition - 1].CardColour == cardPile.Peek().CardColour || playerList[x].CardHand[cardPosition - 1].CardType == cardPile.Peek().CardType || playerList[x].CardHand[cardPosition - 1].CardColour == "Neutral"))
-                                    {
-                                        cardPlaced = true;
-                                        cardPile.Push(playerList[x].CardHand[cardPosition - 1]);
-                                        playerList[x].RemoveCard(cardPosition - 1);
-                                        Console.WriteLine();
-                                        switch (cardPile.Peek().CardType)
-                                        {
-                                            case "Plus 2":
-                                                if (x < noPlayers-1)
-                                                {
-                                                    playerList[x+1].AddCard(cardDeckStack.Pop());
-                                                    playerList[x+1].AddCard(cardDeckStack.Pop());
-                                                }
-                                                else
-                                                {
-                                                    playerList[0].AddCard(cardDeckStack.Pop());
-                                                    playerList[0].AddCard(cardDeckStack.Pop());
-                                                }
-                                                break;
-                                            case "Plus 4":
-                                                if (x < noPlayers - 1)
-                                                {
-                                                    for (int i=0; i<4; i++)
-                                                        playerList[x+1].AddCard(cardDeckStack.Pop());
-                                                }
-                                                else
-                                                {
-                                                    for (int i = 0; i < 4; i++)
-                                                        playerList[0].AddCard(cardDeckStack.Pop());
-                                                }
-                                                bool wrongColour;
-                                                do
-                                                {
-                                                    wrongColour = false;
-                                                    Console.WriteLine("Choose the colour, red, green, blue or yellow");
-                                                    switch(Console.ReadLine().ToUpper())
-                                                    {
-                                                        case "RED":
-                                                            cardPile.Peek().CardColour = "Red";
-                                                            break;
-                                                        case "YELLOW":
-                                                            cardPile.Peek().CardColour = "Yellow";
-                                                            break;
-                                                        case "BLUE":
-                                                            cardPile.Peek().CardColour = "Blue";
-                                                            break;
-                                                        case "GREEN":
-                                                            cardPile.Peek().CardColour = "Green";
-                                                            break;
-                                                        default:
-                                                            Console.WriteLine("Colour chosen is invalid.");
-                                                            wrongColour = true;
-                                                            break;
-                                                    }
-                                                } while (wrongColour);
-                                                break;
-                                            case "Change Colour":
-                                                do
-                                                {
-                                                    wrongColour = false;
-                                                    Console.WriteLine("Choose the colour, red, green, blue or yellow");
-                                                    switch (Console.ReadLine().ToUpper())
-                                                    {
-                                                        case "RED":
-                                                            cardPile.Peek().CardColour = "Red";
-                                                            break;
-                                                        case "YELLOW":
-                                                            cardPile.Peek().CardColour = "Yellow";
-                                                            break;
-                                                        case "BLUE":
-                                                            cardPile.Peek().CardColour = "Blue";
-                                                            break;
-                                                        case "GREEN":
-                                                            cardPile.Peek().CardColour = "Green";
-                                                            break;
-                                                        default:
-                                                            Console.WriteLine("Colour chosen is invalid.");
-                                                            wrongColour = true;
-                                                            break;
-                                                    }
-                                                } while (wrongColour);
-                                                break;
-                                            /*case "Reverse":
-                                                break;*/
-                                            case "Block":
-                                                blocked = true;
-                                                break;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("That card can't go on the pile.\n");
-                                    }
-                                }
-                                catch (FormatException)
-                                {
-                                    Console.WriteLine("You didn't enter the number position of the card in your hand.\n");
-                                }
-                                catch (ArgumentOutOfRangeException)
-                                {
-                                    Console.WriteLine("Position entered is out of the range of your hand.\n");
-                                }
-                            }
-                            if (playerList[x].CardHand.Count <= 0)
-                            {
-                                winnerFound = true;
-                                winner = playerList[x].Username;
-                                break;
-                            }
-                            else
-                            {
-                                winnerFound = false;
-                                break;
-                            }
-                        } while (!cardPlaced);
-                        if (winnerFound || cardDeck.Count <= 0)
-                            break;
-                        if (blocked)
+                        for (int y = 0; y < playerList[playerPosition].CardHand.Count; y++)
                         {
-                            blocked = false;
-                            if (x < noPlayers - 1)
-                                x++;
+                            if (playerList[playerPosition].CardHand[y].CardType == "number")
+                                Console.WriteLine($"Card {y + 1}: {playerList[playerPosition].CardHand[y].CardColour} {playerList[playerPosition].CardHand[y].CardVal},");
                             else
-                                x = 0;
+                                Console.WriteLine($"Card {y + 1}: {playerList[playerPosition].CardHand[y].CardColour} {playerList[playerPosition].CardHand[y].CardType},");
                         }
+                        Console.WriteLine("\nSelect a card by its number position in your hand to place on the pile, or type 'draw' to draw a card and move on.");
+                        cardChoice = Console.ReadLine();
+                        if (cardChoice.ToUpper() == "DRAW")
+                        {
+                            playerList[playerPosition].AddCard(cardDeckStack.Pop());
+                            cardPlaced = true;
+
+                            Console.WriteLine("New Hand:");
+                            for (int y = 0; y < playerList[playerPosition].CardHand.Count; y++)
+                            {
+                                if (playerList[playerPosition].CardHand[y].CardType == "number")
+                                    Console.WriteLine($"Card {y + 1}: {playerList[playerPosition].CardHand[y].CardColour} {playerList[playerPosition].CardHand[y].CardVal},");
+                                else
+                                    Console.WriteLine($"Card {y + 1}: {playerList[playerPosition].CardHand[y].CardColour} {playerList[playerPosition].CardHand[y].CardType},");
+                            }
+                            Console.WriteLine();
+                        }
+                        else
+                        {
+                            try
+                            {
+                                cardPosition = Convert.ToInt32(cardChoice);
+                                if (playerList[playerPosition].CardHand[cardPosition - 1].CardType == "number" && (playerList[playerPosition].CardHand[cardPosition - 1].CardColour == cardPile.Peek().CardColour || playerList[playerPosition].CardHand[cardPosition - 1].CardVal == cardPile.Peek().CardVal))
+                                {
+                                    cardPlaced = true;
+                                    cardPile.Push(playerList[playerPosition].CardHand[cardPosition - 1]);
+                                    playerList[playerPosition].RemoveCard(cardPosition - 1);
+                                    Console.WriteLine();
+                                }
+                                else if (playerList[playerPosition].CardHand[cardPosition - 1].CardType != "number" && (playerList[playerPosition].CardHand[cardPosition - 1].CardColour == cardPile.Peek().CardColour || playerList[playerPosition].CardHand[cardPosition - 1].CardType == cardPile.Peek().CardType || playerList[playerPosition].CardHand[cardPosition - 1].CardColour == "Neutral"))
+                                {
+                                    cardPlaced = true;
+                                    cardPile.Push(playerList[playerPosition].CardHand[cardPosition - 1]);
+                                    playerList[playerPosition].RemoveCard(cardPosition - 1);
+                                    Console.WriteLine();
+                                    switch (cardPile.Peek().CardType)
+                                    {
+                                        case "Plus 2":
+                                            if (playerPosition < noPlayers-1)
+                                            {
+                                                playerList[playerPosition+1].AddCard(cardDeckStack.Pop());
+                                                playerList[playerPosition+1].AddCard(cardDeckStack.Pop());
+                                            }
+                                            else
+                                            {
+                                                playerList[0].AddCard(cardDeckStack.Pop());
+                                                playerList[0].AddCard(cardDeckStack.Pop());
+                                            }
+                                            break;
+                                        case "Plus 4":
+                                            if (playerPosition < noPlayers - 1)
+                                            {
+                                                for (int i=0; i<4; i++)
+                                                    playerList[playerPosition+1].AddCard(cardDeckStack.Pop());
+                                            }
+                                            else
+                                            {
+                                                for (int i = 0; i < 4; i++)
+                                                    playerList[0].AddCard(cardDeckStack.Pop());
+                                            }
+                                            bool wrongColour;
+                                            do
+                                            {
+                                                wrongColour = false;
+                                                Console.WriteLine("Choose the colour, red, green, blue or yellow");
+                                                switch(Console.ReadLine().ToUpper())
+                                                {
+                                                    case "RED":
+                                                        cardPile.Peek().CardColour = "Red";
+                                                        break;
+                                                    case "YELLOW":
+                                                        cardPile.Peek().CardColour = "Yellow";
+                                                        break;
+                                                    case "BLUE":
+                                                        cardPile.Peek().CardColour = "Blue";
+                                                        break;
+                                                    case "GREEN":
+                                                        cardPile.Peek().CardColour = "Green";
+                                                        break;
+                                                    default:
+                                                        Console.WriteLine("Colour chosen is invalid.");
+                                                        wrongColour = true;
+                                                        break;
+                                                }
+                                            } while (wrongColour);
+                                            break;
+                                        case "Change Colour":
+                                            do
+                                            {
+                                                wrongColour = false;
+                                                Console.WriteLine("Choose the colour, red, green, blue or yellow");
+                                                switch (Console.ReadLine().ToUpper())
+                                                {
+                                                    case "RED":
+                                                        cardPile.Peek().CardColour = "Red";
+                                                        break;
+                                                    case "YELLOW":
+                                                        cardPile.Peek().CardColour = "Yellow";
+                                                        break;
+                                                    case "BLUE":
+                                                        cardPile.Peek().CardColour = "Blue";
+                                                        break;
+                                                    case "GREEN":
+                                                        cardPile.Peek().CardColour = "Green";
+                                                        break;
+                                                    default:
+                                                        Console.WriteLine("Colour chosen is invalid.");
+                                                        wrongColour = true;
+                                                        break;
+                                                }
+                                            } while (wrongColour);
+                                            break;
+                                        case "Reverse":
+                                            forwardDirection = !forwardDirection;
+                                            break;
+                                        case "Block":
+                                            blocked = true;
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("That card can't go on the pile.\n");
+                                }
+                            }
+                            catch (FormatException)
+                            {
+                                Console.WriteLine("You didn't enter the number position of the card in your hand.\n");
+                            }
+                            catch (ArgumentOutOfRangeException)
+                            {
+                                Console.WriteLine("Position entered is out of the range of your hand.\n");
+                            }
+                        }
+                        if (playerList[playerPosition].CardHand.Count <= 0)
+                        {
+                            winnerFound = true;
+                            winner = playerList[playerPosition].Username;
+                            break;
+                        }
+                        else
+                        {
+                            winnerFound = false;
+                            break;
+                        }
+                    } while (!cardPlaced);
+
+                    if (playerPosition < noPlayers - 1 && forwardDirection)
+                        playerPosition++;
+                    else if (forwardDirection)
+                        playerPosition = 0;
+                    if (playerPosition > 0 && !forwardDirection)
+                        playerPosition--;
+                    else if (!forwardDirection)
+                        playerPosition = noPlayers - 1;
+                    if (winnerFound || cardDeck.Count <= 0)
+                        break;
+                    if (blocked)
+                    {
+                        blocked = false;
+                        if (playerPosition < noPlayers - 1 && forwardDirection)
+                            playerPosition++;
+                        else if (forwardDirection)
+                            playerPosition = 0;
+                        if (playerPosition > 0 && !forwardDirection)
+                            playerPosition--;
+                        else if (!forwardDirection)
+                            playerPosition = noPlayers - 1;
                     }
                 } while (!winnerFound && cardDeck.Count > 0);
                 if (winnerFound)
