@@ -104,6 +104,13 @@ namespace CardGames
                 }
                 do
                 {
+                    Console.WriteLine("Would you like to see previous winners of Uno?");
+                    if (Console.ReadLine().ToUpper() == "YES" || Console.ReadLine().ToUpper() == "Y")
+                    {
+                        List<string> winnersList = FileHandling.ReadFromFile();
+                        foreach (string previousWinner in winnersList)
+                            Console.WriteLine(previousWinner);
+                    }   
                     Console.WriteLine("How many people are playing Uno?");
                     try
                     {
@@ -325,7 +332,10 @@ namespace CardGames
                     }
                 } while (!winnerFound && cardDeck.Count > 0);
                 if (winnerFound)
+                {
                     Console.WriteLine($"Winner is : {winner}!");
+                    FileHandling.FileWrite(winner);
+                }
                 else
                     Console.WriteLine("Ran out of cards from the draw deck, no one wins!");
 
