@@ -106,7 +106,8 @@ namespace CardGames
                 do
                 {
                     Console.WriteLine("Would you like to see previous winners of Uno?");
-                    if (Console.ReadLine().ToUpper() == "YES" || Console.ReadLine().ToUpper() == "Y")
+                    string seeWinners = Console.ReadLine().ToUpper();
+                    if (seeWinners == "YES" || seeWinners == "Y")
                     {
                         List<string> winnersList = FileHandling.ReadFromFile();
                         foreach (string previousWinner in winnersList)
@@ -119,25 +120,30 @@ namespace CardGames
                         string playerName;
                         bool alreadyUsed;
                         noPlayers = Convert.ToInt32(Console.ReadLine());
-                        for (int x = 1; x <= noPlayers; x++)
+                        if (noPlayers <= 5)
                         {
-                            do
+                            for (int x = 1; x <= noPlayers; x++)
                             {
-                                Console.WriteLine($"Enter a name for Player {x}");
-                                playerName = Console.ReadLine();
-                                alreadyUsed = playerListStr.Contains(playerName);
-                                if (alreadyUsed)
-                                    Console.WriteLine("That username has already been selected, please try again.");
-                            } while (alreadyUsed);
-                            List<Card> hand = new List<Card>();
-                            for (int y = 0; y < 7; y++)
-                            {
-                                hand.Add(cardDeckStack.Pop());
+                                do
+                                {
+                                    Console.WriteLine($"Enter a name for Player {x}");
+                                    playerName = Console.ReadLine();
+                                    alreadyUsed = playerListStr.Contains(playerName);
+                                    if (alreadyUsed)
+                                        Console.WriteLine("That username has already been selected, please try again.");
+                                } while (alreadyUsed);
+                                List<Card> hand = new List<Card>();
+                                for (int y = 0; y < 7; y++)
+                                {
+                                    hand.Add(cardDeckStack.Pop());
+                                }
+                                playerList.Add(new Player(playerName, x, hand));
+                                playerListStr.Add(playerName);
                             }
-                            playerList.Add(new Player(playerName, x, hand));
-                            playerListStr.Add(playerName);
+                            playersChosen = true;
                         }
-                        playersChosen = true;
+                        else
+                            Console.WriteLine("That is too many players.");
                     }
                     catch (FormatException)
                     {
@@ -353,7 +359,8 @@ namespace CardGames
                     Console.WriteLine("Ran out of cards from the draw deck, no one wins!");
 
                 Console.WriteLine("Would you like to play again?");
-                if (Console.ReadLine().ToUpper() == "YES" || Console.ReadLine().ToUpper() == "Y")
+                string playAgainStr = Console.ReadLine().ToUpper();
+                if (playAgainStr == "YES" || playAgainStr == "Y")
                     playAgain = true;
                 else playAgain = false;       
             } while (playAgain);
